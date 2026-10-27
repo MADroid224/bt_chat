@@ -1,0 +1,35 @@
+name: Build Android APK
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Set up a stable Python version that Buildozer natively supports
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # Install the required build tools in the cloud environment
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential ccache git libffi-dev libssl-dev locales openjdk-17-jdk unzip zip
+          pip install --upgrade pip
+          pip install buildozer setuptools wheel
+
+      # Compile the actual APK 
+      - name: Build with Buildozer
+        run: |
+          buildozer android debug
+
+      # Upload the compiled app so you can download it
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: package
+          path: bin/*.apk
