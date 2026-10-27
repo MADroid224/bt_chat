@@ -22,10 +22,17 @@ jobs:
           pip install --upgrade pip
           pip install buildozer setuptools wheel
 
-      # Compile the actual APK 
+      # Automatically accept all Android SDK licenses in advance
+      - name: Accept Android SDK Licenses
+        run: |
+          mkdir -p ~/.buildozer/android/platform/android-sdk/licenses
+          echo -e "\n8933bad161ad24ed14d9a745a56d386b158220f3\nd56f5187479451eabf01fb743144d183306d8435\nd6487e8d97e40d253a487c555f15a34d04813687\n84831b9409646a918e30573bab4c9c91346d8abd\n504667f4c227374a22015c617b3b2d10cf6541fb\n35105006d64e92a472c05a72a12f900fa4e99f1a\n7a79a69800a98c5c589af163db444a49fc412db1" > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
+          echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-preview-license
+
+      # Compile the actual APK (automatically forcing license acceptance hooks)
       - name: Build with Buildozer
         run: |
-          buildozer android debug
+          yes | buildozer android debug
 
       # Upload the compiled app so you can download it
       - name: Upload APK Artifact
